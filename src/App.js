@@ -11,8 +11,8 @@ const App = () => {
     // const [mobileOpen, setMobileOpen] = React.useState(false);
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState({});
-    // const [order, setOrder] = useState({});
-    // const [errorMessage, setErrorMessage] = useState('');
+    const [order, setOrder] = useState({});
+    const [errorMessage, setErrorMessage] = useState('');
 
 const fetchProducts = async () => {
     const { data } = await commerce.products.list();
@@ -48,24 +48,27 @@ const fetchProducts = async () => {
 
     setCart(cart);
   };
+       //REFRESHING THE DAMNED CART:)
+  const refreshCart = async () => {
+    const newCart = await commerce.cart.refresh();
 
-//   const refreshCart = async () => {
-//     const newCart = await commerce.cart.refresh();
+    setCart(newCart);
+  };
 
-//     setCart(newCart);
-//   };
 
-//   const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
-//     try {
-//       const incomingOrder = await commerce.checkout.capture(checkoutTokenId, newOrder);
+           //FULLFILLING ORDER....
+  const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
+    try {
+      const incomingOrder = await commerce.checkout.capture(checkoutTokenId, newOrder);
 
-//       setOrder(incomingOrder);
+      setOrder(incomingOrder);
+      refreshCart();
 
-//       refreshCart();
-//     } catch (error) {
-//       setErrorMessage(error.data.error.message);
-//     }
-//   };
+    } catch (error) {
+      //GETTING MEANINGFUL INFORMATION FOR DEBUGGING...
+      setErrorMessage(error.data.error.message);
+    }
+  };
 
 
   useEffect(() => {
@@ -98,7 +101,13 @@ const fetchProducts = async () => {
                     />
                       </Route>
                       <Route exact path="/checkout" >
-                          <Checkout />
+                        {/* //passing the cart as a prop */}
+                          <Checkout
+                           cart ={cart}
+                           order={order}
+                           onCaptureCheckout={handleCaptureCheckout}
+                           error={errorMessage}
+                          />
                       </Route>
                 </Switch>  
            
