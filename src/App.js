@@ -86,6 +86,7 @@ const fetchProducts = async () => {
         // let's wrap to our router
         <Router>
         <div>
+    
             <QuantumNavbar totalItems={cart.total_items} />
                {/* switching between componets... */}
                 <Switch>
